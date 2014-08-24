@@ -12,6 +12,7 @@ then
 	sudo rm -r ~/.node-gyp
 	sudo rm -r ~/.npmrc
 	sudo rm -r ~/node_modules
+	sudo rm -r ~/Library/Logs/Homebrew/node
 	sudo rm /usr/local/bin/node
 	sudo rm /usr/local/bin/npm
 	sudo rm -r /usr/local/include/node
