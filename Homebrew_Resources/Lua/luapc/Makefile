@@ -1,2 +1,2 @@
 install:
-	install lua.pc lib
+	install lua.pc #{lib}/pkgconfig
