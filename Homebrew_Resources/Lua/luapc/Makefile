@@ -1,2 +1,4 @@
+PREFIX=#{prefix}
+
 install:
-	install lua.pc #{lib}/pkgconfig
+	install lua.pc ${prefix}/lib/pkgconfig
