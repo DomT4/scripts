@@ -3,6 +3,10 @@ read -p "This will completely erase all traces of Node/npm from your system. You
 echo    # blank echo to prevent errors
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
+    echo "We'll make a backup of your npm installed list so you can reference it later if desired."
+    npm list -g >> npm_global.txt
+    npm list >> npm_non_global.txt
+    echo "Lists have been created! You'll find them in whatever directory you are currently cd'ed into."
 	brew remove node
 	brew cleanup
 	brew prune
