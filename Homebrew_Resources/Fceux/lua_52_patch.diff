@@ -1,0 +1,144 @@
+Index: SConstruct
+===================================================================
+--- SConstruct	(revision 3076)
++++ SConstruct	(working copy)
+@@ -35,6 +35,8 @@
+ prefix = GetOption('prefix')
+ env = Environment(options = opts)
+ 
++env.Append(CCFLAGS = ["-Isrc"])
++
+ if env['RELEASE']:
+   env.Append(CPPDEFINES=["PUBLIC_RELEASE"])
+   env['DEBUG'] = 0
+@@ -138,7 +140,12 @@
+       # Should work on any *nix
+       env.Append(CCFLAGS = ["-DLUA_USE_LINUX"])
+     lua_available = False
+-    if conf.CheckLib('lua5.1'):
++    if conf.CheckLib('lua5.2'):
++      env.Append(LINKFLAGS = ["-ldl", "-llua5.2"])
++      env.Append(CCFLAGS = ["-I/usr/include/lua5.2"])
++      env.Append(CPPDEFINES = ["LUA_COMPAT_ALL"])
++      lua_available = True
++    elif conf.CheckLib('lua5.1'):
+       env.Append(LINKFLAGS = ["-ldl", "-llua5.1"])
+       env.Append(CCFLAGS = ["-I/usr/include/lua5.1"])
+       lua_available = True
+Index: src/SConscript
+===================================================================
+--- src/SConscript	(revision 3076)
++++ src/SConscript	(working copy)
+@@ -1,7 +1,9 @@
+ import glob
+ file_list = glob.glob('*.cpp')
+-file_list.remove('lua-engine.cpp') # use logic below for this
+ 
++file_list.remove('lua-engine.cpp') # use lua logic below for this
++file_list.remove('lua-compatibility.cpp')
++
+ subdirs = Split("""
+ boards
+ drivers/common
+@@ -16,6 +18,7 @@
+ 
+ if env['LUA']:
+   file_list.append('lua-engine.cpp')
++  file_list.append('lua-compatibility.cpp')
+   if env['SYSTEM_LUA'] == 0:
+     subdirs.append('lua')
+ 
+Index: src/drivers/sdl/input.cpp
+===================================================================
+--- src/drivers/sdl/input.cpp	(revision 3076)
++++ src/drivers/sdl/input.cpp	(working copy)
+@@ -426,6 +426,7 @@
+ 	FCEUI_LoadState (fname.c_str ());
+ }
+ 
++#define KEYBOARDTRANSFORMER_SPECIFIC
+ #ifdef KEYBOARDTRANSFORMER_SPECIFIC
+ /**
+ * Hook for transformer board
+Index: src/lua-compatibility.cpp
+===================================================================
+--- src/lua-compatibility.cpp	(revision 0)
++++ src/lua-compatibility.cpp	(working copy)
+@@ -0,0 +1,29 @@
++#include "lua-compatibility.h"
++#include "lauxlib.h"
++
++#if LUA_VERSION_NUM >= 502
++
++/* This implementation of lual_typerror is from lua-5.1.5 and was discontinued
++ * in 5.2. Lua is released under the MIT License.
++ *
++ * See:
++ *      http://www.lua.org/license.html
++ *      http://www.opensource.org/licenses/mit-license.html
++ */
++int luaL_typerror(lua_State *L, int narg, const char *tname)
++{
++  const char *msg = lua_pushfstring(L, "%s expected, got %s",
++                                    tname, lua_typename(L, narg));
++  return luaL_argerror(L, narg, msg);
++}
++
++/* From the Lua changelog: "Function lua_resume has an extra parameter, from.
++ * Pass NULL or the thread doing the call." In this implementation, we pass in
++ * NULL.
++ */
++int lua_resume(lua_State *L, int narg)
++{
++    return lua_resume(L, NULL, narg);
++}
++
++#endif //LUA_VERSION_NUM >= 502
+Index: src/lua-compatibility.h
+===================================================================
+--- src/lua-compatibility.h	(revision 0)
++++ src/lua-compatibility.h	(working copy)
+@@ -0,0 +1,22 @@
++#ifndef __LUA_COMPATIBILITY_
++#define __LUA_COMPATIBILITY_
++#include "types.h"
++#include <lua.hpp>
++#include "fceulua.h"
++
++// If Lua 5.2 or later, add some compatibility functions.
++#if LUA_VERSION_NUM >= 502
++
++int luaL_typerror (lua_State *L, int narg, const char *tname);
++int lua_resume(lua_State *L, int narg);
++
++#define lua_open luaL_newstate
++#define luaL_reg luaL_Reg
++
++#else
++
++    //No compatibility functions are needed.
++
++#endif //LUA_VERSION_NUM >= 502
++
++#endif //__LUA_COMPATIBILITY_
+Index: src/lua-engine.cpp
+===================================================================
+--- src/lua-engine.cpp	(revision 3076)
++++ src/lua-engine.cpp	(working copy)
+@@ -24,6 +24,7 @@
+ #include "utils/xstring.h"
+ #include "utils/memory.h"
+ #include "fceulua.h"
++#include "lua-compatibility.h"
+ 
+ #ifdef WIN32
+ #include "drivers/win/common.h"
+@@ -275,7 +276,7 @@
+ 	gui_used = GUI_CLEAR;
+ 	//if (wasPaused && !FCEUI_EmulationPaused())
+ 	//	FCEUI_ToggleEmulationPause();
+-	if (fps_scale != 256)							//thanks, we already know it's on normal speed
++	//if (fps_scale != 256)							//thanks, we already know it's on normal speed
+ 		FCEUD_SetEmulationSpeed(EMUSPEED_NORMAL);	//TODO: Ideally lua returns the speed to the speed the user set before running the script
+ 													//rather than returning it to normal, and turbo off.  Perhaps some flags and a FCEUD_GetEmulationSpeed function
+ 	turbo = false;
