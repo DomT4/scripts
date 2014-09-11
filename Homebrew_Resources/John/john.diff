@@ -1,0 +1,13 @@
+diff --git a/src/rawSHA1_ng_fmt.c b/src/rawSHA1_ng_fmt.c
+index 5f89cda..6cbd550 100644
+--- a/src/rawSHA1_ng_fmt.c
++++ b/src/rawSHA1_ng_fmt.c
+@@ -530,7 +530,7 @@ static void sha1_fmt_crypt_all(int count)
+ 
+ #if defined(__SSE4_1__)
+ 
+-# if !defined(__INTEL_COMPILER)
++# if !defined(__INTEL_COMPILER) && !defined(__clang__)
+ // This intrinsic is not always available in GCC, so define it here.
+ static inline int _mm_testz_si128 (__m128i __M, __m128i __V)
+ {
