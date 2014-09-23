@@ -1,0 +1,22 @@
+diff --git a/packaging/macosx/osx-app.sh b/packaging/macosx/osx-app.sh
+index 3475d16..3d020dd 100755
+--- a/packaging/macosx/osx-app.sh
++++ b/packaging/macosx/osx-app.sh
+@@ -125,7 +125,7 @@ do
+ 			shift 1 ;;
+ 		-qt|--qt-flavor)
+ 			ui_toolkit="qt"
+-			wireshark_bin_name="wireshark-qt"
++			wireshark_bin_name="wireshark"
+ 			;;
+ 		-h|--help)
+ 			help
+@@ -604,7 +604,7 @@ codesign_file () {
+ 
+ if [ -n "$CODE_SIGN_IDENTITY" ] ; then
+ 	security find-identity -v -s "$CODE_SIGN_IDENTITY" -p codesigning
+-	
++ 
+ 	echo "Signing executables"
+ 	for binary in $cs_binary_list ; do
+ 		codesign_file "$binary"
