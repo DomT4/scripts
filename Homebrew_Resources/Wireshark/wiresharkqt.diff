@@ -1,8 +1,8 @@
 diff --git a/packaging/macosx/osx-app.sh b/packaging/macosx/osx-app.sh
-index 3475d16..3d020dd 100755
+index 684456c..61944ae 100755
 --- a/packaging/macosx/osx-app.sh
 +++ b/packaging/macosx/osx-app.sh
-@@ -125,7 +125,7 @@ do
+@@ -121,7 +121,7 @@ do
  			shift 1 ;;
  		-qt|--qt-flavor)
  			ui_toolkit="qt"
@@ -11,12 +11,15 @@ index 3475d16..3d020dd 100755
  			;;
  		-h|--help)
  			help
-@@ -604,7 +604,7 @@ codesign_file () {
+@@ -582,7 +582,7 @@ codesign_file () {
  
  if [ -n "$CODE_SIGN_IDENTITY" ] ; then
  	security find-identity -v -s "$CODE_SIGN_IDENTITY" -p codesigning
 -	
-+ 
++
  	echo "Signing executables"
  	for binary in $cs_binary_list ; do
  		codesign_file "$binary"
+-- 
+1.7.9.5
+
