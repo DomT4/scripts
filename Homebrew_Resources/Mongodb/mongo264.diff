@@ -1,14 +1,3 @@
---- mongodb-2.6.4/SConstruct.orig	2014-09-23 15:09:49.000000000 +0200
-+++ mongodb-2.6.4/SConstruct	2014-09-23 15:10:13.000000000 +0200
-@@ -307,7 +307,7 @@
-            0, False)
-
- if darwin:
--    osx_version_choices = ['10.6', '10.7', '10.8', '10.9']
-+    osx_version_choices = ['10.6', '10.7', '10.8', '10.9', '10.10']
-     add_option("osx-version-min", "minimum OS X version to support", 1, True,
-                type = 'choice', default = osx_version_choices[0], choices = osx_version_choices)
-
 --- mongodb-2.6.4/src/third_party/s2/util/endian/endian.h.orig	2014-09-28 01:08:51.000000000 +0200
 +++ mongodb-2.6.4/src/third_party/s2/util/endian/endian.h	2014-09-28 01:09:06.000000000 +0200
 @@ -177,15 +177,4 @@
