@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 read -p "This will completely erase all traces of Node/npm from your system. You will be asked to enter your password for sudo. Proceed? (y/n)" -n 1 -r
 echo    # blank echo to prevent errors
 if [[ $REPLY =~ ^[Yy]$ ]]
