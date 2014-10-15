@@ -1,0 +1,82 @@
+diff --git a/apps/s_client.c b/apps/s_client.c
+index d56dc8d..a6f972a 100644
+--- a/apps/s_client.c
++++ b/apps/s_client.c
+@@ -942,10 +942,6 @@ static char *jpake_secret = NULL;
+ 			meth=DTLSv1_2_client_method();
+ 			socket_type=SOCK_DGRAM;
+ 			}
+-		else if (strcmp(*argv,"-fallback_scsv") == 0)
+-			{
+-			fallback_scsv = 1;
+-			}
+ 		else if (strcmp(*argv,"-timeout") == 0)
+ 			enable_timeouts=1;
+ 		else if (strcmp(*argv,"-mtu") == 0)
+@@ -954,6 +950,10 @@ static char *jpake_secret = NULL;
+ 			socket_mtu = atol(*(++argv));
+ 			}
+ #endif
++		else if (strcmp(*argv,"-fallback_scsv") == 0)
++			{
++			fallback_scsv = 1;
++			}
+ 		else if	(strcmp(*argv,"-keyform") == 0)
+ 			{
+ 			if (--argc < 1) goto bad;
+
+diff --git a/doc/apps/s_client.pod b/doc/apps/s_client.pod
+index 8f64f49..2057dc8 100644
+--- a/doc/apps/s_client.pod
++++ b/doc/apps/s_client.pod
+@@ -64,6 +64,9 @@ B<openssl> B<s_client>
+ [B<-no_ssl2>]
+ [B<-no_ssl3>]
+ [B<-no_tls1>]
++[B<-no_tls1_1>]
++[B<-no_tls1_2>]
++[B<-fallback_scsv>]
+ [B<-bugs>]
+ [B<-cipher cipherlist>]
+ [B<-serverpref>]
+@@ -245,16 +248,19 @@ Use the PSK key B<key> when using a PSK cipher suite. The key is
+ given as a hexadecimal number without leading 0x, for example -psk
+ 1a2b3c4d.
+ 
+-=item B<-ssl2>, B<-ssl3>, B<-tls1>, B<-no_ssl2>, B<-no_ssl3>, B<-no_tls1>
++=item B<-ssl2>, B<-ssl3>, B<-tls1>, B<-no_ssl2>, B<-no_ssl3>, B<-no_tls1>, B<-no_tls1_1>, B<-no_tls1_2>
+ 
+ these options disable the use of certain SSL or TLS protocols. By default
+ the initial handshake uses a method which should be compatible with all
+ servers and permit them to use SSL v3, SSL v2 or TLS as appropriate.
+ 
+-Unfortunately there are a lot of ancient and broken servers in use which
++Unfortunately there are still ancient and broken servers in use which
+ cannot handle this technique and will fail to connect. Some servers only
+-work if TLS is turned off with the B<-no_tls> option others will only
+-support SSL v2 and may need the B<-ssl2> option.
++work if TLS is turned off.
++
++=item B<-fallback_scsv>
++
++Send TLS_FALLBACK_SCSV in the ClientHello.
+ 
+ =item B<-bugs>
+ 
+diff --git a/doc/ssl/SSL_CTX_set_mode.pod b/doc/ssl/SSL_CTX_set_mode.pod
+index 8cb669d..0bcf5d2 100644
+--- a/doc/ssl/SSL_CTX_set_mode.pod
++++ b/doc/ssl/SSL_CTX_set_mode.pod
+@@ -71,6 +71,12 @@ SSL_CTX->freelist_max_len, which defaults to 32.  Using this flag can
+ save around 34k per idle SSL connection.
+ This flag has no effect on SSL v2 connections, or on DTLS connections.
+ 
++=item SSL_MODE_FALLBACK_SCSV
++
++Send TLS_FALLBACK_SCSV in the ClientHello.
++To be set by applications that reconnect with a downgraded protocol
++version; see draft-ietf-tls-downgrade-scsv-00 for details.
++
+ =back
+ 
+ =head1 RETURN VALUES
