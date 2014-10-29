@@ -1,0 +1,21 @@
+diff --git a/Makefile b/Makefile
+index 5fcf1dd..db6506a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -419,13 +419,12 @@ oxp:  an
+  $(TOUCH) ip6
+  $(BUILD) BUILDTYPE=osx IP=$(IP6) EXTRAAUTHENTICATORS="$(EXTRAAUTHENTICATORS) gss" \
+  PASSWDTYPE=pam \
+- EXTRACFLAGS="$(EXTRACFLAGS) -DMAC_OSX_KLUDGE=1" \
+- SPECIALS="SSLINCLUDE=/usr/include/openssl SSLLIB=/usr/lib SSLCERTS=/System/Library/OpenSSL/certs SSLKEYS=/System/Library/OpenSSL/private GSSINCLUDE=/usr/include GSSLIB=/usr/lib PAMDLFLAGS=-lpam"
++ SPECIALS="GSSINCLUDE=/usr/include GSSLIB=/usr/lib PAMDLFLAGS=-lpam"
+ 
+ osx: osxok an
+  $(TOUCH) ip6
+  $(BUILD) BUILDTYPE=$@ IP=$(IP6) EXTRAAUTHENTICATORS="$(EXTRAAUTHENTICATORS) gss" \
+- SPECIALS="SSLINCLUDE=/usr/include/openssl SSLLIB=/usr/lib SSLCERTS=/System/Library/OpenSSL/certs SSLKEYS=/System/Library/OpenSSL/private GSSINCLUDE=/usr/include GSSLIB=/usr/lib"
++ SPECIALS="GSSINCLUDE=/usr/include GSSLIB=/usr/lib"
+ 
+ osxok:
+  @$(SH) -c '(test ! -f /usr/include/pam/pam_appl.h ) || make osxwarn'
+
