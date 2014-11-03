@@ -1,28 +1,26 @@
-+--- alpine-2.11/configure.orig	2013-09-14 20:37:28.000000000 +0200
-++++ alpine-2.11/configure	2013-09-14 20:38:07.000000000 +0200
-+@@ -16720,7 +16720,7 @@
-+ if test "$ac_res" != no; then :
-    test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  
- -      LIBS="$LIBS -lssl"
- +      LIBS="$LIBS -lssl -lcrypto"
-  
-- fi
-- 
-+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking Openssl library version >= 1.0.0c" >&5
-+ $as_echo_n "checking Openssl library version >= 1.0.0c... " >&6; }
-+--- alpine-2.11/imap/Makefile.orig	2013-09-14 20:40:50.000000000 +0200
-++++ alpine-2.11/imap/Makefile	2013-09-14 20:47:27.000000000 +0200
-+@@ -421,7 +421,7 @@
-  	$(BUILD) BUILDTYPE=osx IP=$(IP6) EXTRAAUTHENTICATORS="$(EXTRAAUTHENTICATORS) gss" \
-  	PASSWDTYPE=pam \
-  	EXTRACFLAGS="$(EXTRACFLAGS) -DMAC_OSX_KLUDGE=1" \
- -	SPECIALS="SSLINCLUDE=/usr/include/openssl SSLLIB=/usr/lib SSLCERTS=/System/Library/OpenSSL/certs SSLKEYS=/System/Library/OpenSSL/private GSSINCLUDE=/usr/include GSSLIB=/usr/lib PAMDLFLAGS=-lpam"
- +	SPECIALS="SSLINCLUDE=__PREFIX__/include/openssl SSLLIB=__PREFIX__/lib GSSINCLUDE=__PREFIX__/include GSSLIB=__PREFIX__/lib PAMDLFLAGS=-lpam"
-  
-+ oxs:	an
-+ 	$(TOUCH) ip6
-+@@ -432,7 +432,7 @@
-  osx:	osxok an
-  	$(TOUCH) ip6
-  	$(BUILD) BUILDTYPE=$@ IP=$(IP6) EXTRAAUTHENTICATORS="$(EXTRAAUTHENTICATORS) gss" \
+diff --git a/configure b/configure
+index ae8fd6b..55b2e4e 100755
+--- a/configure
++++ b/configure
+@@ -16720,7 +16720,7 @@ ac_res=$ac_cv_search_SSL_library_init
+ if test "$ac_res" != no; then :
+   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+ 
+-      LIBS="$LIBS -lssl"
++      LIBS="$LIBS -lssl -lcrypto"
+ 
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking Openssl library version >= 1.0.0c" >&5
+ $as_echo_n "checking Openssl library version >= 1.0.0c... " >&6; }
+diff --git a/imap/Makefile b/imap/Makefile
+index ec1ded1..b1c1181 100644
+--- a/imap/Makefile
++++ b/imap/Makefile
+@@ -432,7 +432,7 @@ oxs:	an
+ osx:	osxok an
+ 	$(TOUCH) ip6
+ 	$(BUILD) BUILDTYPE=$@ IP=$(IP6) EXTRAAUTHENTICATORS="$(EXTRAAUTHENTICATORS) gss" \
+-	SPECIALS="SSLINCLUDE=/usr/include/openssl SSLLIB=/usr/lib SSLCERTS=/System/Library/OpenSSL/certs SSLKEYS=/System/Library/OpenSSL/private GSSINCLUDE=/usr/include GSSLIB=/usr/lib"
++	SPECIALS="SSLINCLUDE=__PREFIX__/include/openssl SSLLIB=__PREFIX__/lib GSSINCLUDE=__PREFIX__/include GSSLIB=__PREFIX__/lib PAMDLFLAGS=-lpam"
+ 
+ osxok:
+ 	@$(SH) -c '(test ! -f /usr/include/pam/pam_appl.h ) || make osxwarn'
