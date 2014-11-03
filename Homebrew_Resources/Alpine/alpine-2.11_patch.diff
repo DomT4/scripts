@@ -46,3 +46,17 @@ index ec1ded1..d9d2bd1 100644
  osxok:
  	@$(SH) -c '(test ! -f /usr/include/pam/pam_appl.h ) || make osxwarn'
 
+diff --git a/imap/src/osdep/unix/ssl_unix.c b/imap/src/osdep/unix/ssl_unix.c
+index 5a7d0bc..27c0b59 100644
+--- a/imap/src/osdep/unix/ssl_unix.c
++++ b/imap/src/osdep/unix/ssl_unix.c
+@@ -27,8 +27,7 @@
+  */
+ 
+ #define crypt ssl_private_crypt
+-#include <x509v3.h>
+-#include <ssl.h>
++#include <ssl.h>\n#include <x509v3.h>
+ #include <err.h>
+ #include <pem.h>
+ #include <buffer.h>
