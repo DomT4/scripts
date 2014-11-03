@@ -1,7 +1,7 @@
-From a4ac2e691e7bb45cb633b3728d7193cc80cac6f4 Mon Sep 17 00:00:00 2001
+From 86d684b4228420064c1e0e925732e208ad548e3c Mon Sep 17 00:00:00 2001
 From: Dominyk Tiller <dominyktiller@gmail.com>
-Date: Mon, 3 Nov 2014 22:35:44 +0000
-Subject: [PATCH] yosemite
+Date: Mon, 3 Nov 2014 23:09:43 +0000
+Subject: yosemiteyo
 
 ---
  alpine/alpine.c | 2 +-
@@ -9,7 +9,7 @@ Subject: [PATCH] yosemite
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/alpine/alpine.c b/alpine/alpine.c
-index 9e7298f..db93500 100644
+index 9e7298f..4440404 100644
 --- a/alpine/alpine.c
 +++ b/alpine/alpine.c
 @@ -3322,7 +3322,7 @@ pine_gets_bytes(int reset)
@@ -17,7 +17,7 @@ index 9e7298f..db93500 100644
    ----*/
  void
 -panic(char *message)
-+panic(const char *, ...);
++panic(const char *message)
  {
      char buf[256];
  
