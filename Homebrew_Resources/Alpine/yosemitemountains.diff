@@ -1,0 +1,25 @@
+From 256c9490277c2eef36c38c7e9096bb762fc6761b Mon Sep 17 00:00:00 2001
+From: Dominyk Tiller <dominyktiller@gmail.com>
+Date: Mon, 3 Nov 2014 22:10:09 +0000
+Subject: [PATCH] patch
+
+---
+ pith/util.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pith/util.h b/pith/util.h
+index defbca6..de96283 100644
+--- a/pith/util.h
++++ b/pith/util.h
+@@ -56,7 +56,7 @@ int           *cpyint(int);
+ /* currently mandatory to implement stubs */
+ 
+ /* called when we detect a serious program error */
+-void	  panic(char *);
++void	  panic(const char *, ...);
+ 
+ /* called when testing to see if panic state is in effect */
+ int	 panicking(void);
+-- 
+2.1.3
+
