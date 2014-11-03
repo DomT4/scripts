@@ -1,12 +1,26 @@
-From 256c9490277c2eef36c38c7e9096bb762fc6761b Mon Sep 17 00:00:00 2001
+From a4ac2e691e7bb45cb633b3728d7193cc80cac6f4 Mon Sep 17 00:00:00 2001
 From: Dominyk Tiller <dominyktiller@gmail.com>
-Date: Mon, 3 Nov 2014 22:10:09 +0000
-Subject: [PATCH] patch
+Date: Mon, 3 Nov 2014 22:35:44 +0000
+Subject: [PATCH] yosemite
 
 ---
- pith/util.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ alpine/alpine.c | 2 +-
+ pith/util.h     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/alpine/alpine.c b/alpine/alpine.c
+index 9e7298f..db93500 100644
+--- a/alpine/alpine.c
++++ b/alpine/alpine.c
+@@ -3322,7 +3322,7 @@ pine_gets_bytes(int reset)
+   This is also called from imap routines and fs_get and fs_resize.
+   ----*/
+ void
+-panic(char *message)
++panic(const char *, ...);
+ {
+     char buf[256];
+ 
 diff --git a/pith/util.h b/pith/util.h
 index defbca6..de96283 100644
 --- a/pith/util.h
