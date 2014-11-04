@@ -1,0 +1,20 @@
+diff --git a/web/src/alpined.d/alpined.c b/web/src/alpined.d/alpined.c
+index 98c5a63..d2c63b5 100644
+--- a/web/src/alpined.d/alpined.c
++++ b/web/src/alpined.d/alpined.c
+@@ -751,10 +751,10 @@ main(int argc, char *argv[])
+ 				}
+ 
+ 				switch(Tcl_Eval(interp, &buf[co])){
+-				  case TCL_OK	  : peReturn(cs, "OK", interp->result); break;
+-				  case TCL_ERROR  : peReturn(cs, "ERROR", interp->result); break;
+-				  case TCL_BREAK  : peReturn(cs, "BREAK", interp->result); break;
+-				  case TCL_RETURN : peReturn(cs, "RETURN", interp->result); break;
++				  case TCL_OK	  : peReturn(cs, "OK",  Tcl_GetStringResult(interp)); break;
++				  case TCL_ERROR  : peReturn(cs, "ERROR", Tcl_GetStringResult(interp)); break;
++				  case TCL_BREAK  : peReturn(cs, "BREAK", Tcl_GetStringResult(interp)); break;
++				  case TCL_RETURN : peReturn(cs, "RETURN", Tcl_GetStringResult(interp)); break;
+ 				  default	  : peReturn(cs, "BOGUS", "eval returned unexpected value"); break;
+ 				}
+ 			    }
+
