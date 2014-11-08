@@ -1,11 +1,12 @@
 diff --git a/source/acfg.cc b/source/acfg.cc
-index 70deff5..2020f31 100644
+index 70deff5..5f615b4 100644
 --- a/source/acfg.cc
 +++ b/source/acfg.cc
-@@ -1231,22 +1231,6 @@ time_t BackgroundCleanup()
+@@ -1230,25 +1230,6 @@ time_t BackgroundCleanup()
+ 	return ret;
  }
  
- #ifdef HAVE_SSL
+-#ifdef HAVE_SSL
 -bool DecodeBase64(LPCSTR pAscii, acbuf& binData) {
 -	if(!pAscii)
 -		return false;
@@ -22,6 +23,52 @@ index 70deff5..2020f31 100644
 -	checkForceFclose(memStrm);
 -	return binData.size();
 -}
- #endif
- 
+-#endif
+-
  lockable authLock;
+ 
+ int CheckAdminAuth(LPCSTR auth)
+@@ -1270,43 +1251,6 @@ int CheckAdminAuth(LPCSTR auth)
+ 	if(!bIsHashedPwd)
+ 		return adminauth.compare(p) == 0 ? 0 : 1;
+ 
+-#ifndef HAVE_SSL
+-#warning You really want to add SSL support in order to support hashed passwords
+-	return -1;
+-#endif
+-	acbuf bufDecoded;
+-	if(!DecodeBase64(p, bufDecoded))
+-		return -1;
+-#if 0
+-	// there is always a char reserved
+-	cerr << "huhu, user sent: " << bufDecoded.c_str() <<endl;
+-#endif
+-
+-	string usersauth(bufDecoded.rptr(), bufDecoded.size());
+-	auto poscol=usersauth.find(':');
+-	if(poscol==0 || poscol==stmiss || poscol+1==usersauth.size())
+-		return 1;
+-
+-	// ok, try to match against our hash, first copy user and salt from config
+-	// always calculate the thing and compare the user and maybe hash later
+-	// attacker should not gain any knowledge from faster abort (side channel...)
+-	lockguard g(&authLock);
+-	string testHash=adminauth.substr(0, poscol+9);
+-	if(!AppendPasswordHash(testHash, usersauth.data()+poscol+1, usersauth.size()-poscol+1))
+-		return 1;
+-	if(testHash == adminauth)
+-	{
+-		// great! Cache it!
+-		adminauth = p;
+-		bIsHashedPwd = false;
+-		return 0;
+-	}
+-	return 1;
+-#endif
+-}
+-
+-
+-
+ #endif // MINIBUILD
+ 
+ } // namespace acfg
