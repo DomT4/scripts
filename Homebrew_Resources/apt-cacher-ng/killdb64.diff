@@ -1,0 +1,27 @@
+diff --git a/source/acfg.cc b/source/acfg.cc
+index 70deff5..2020f31 100644
+--- a/source/acfg.cc
++++ b/source/acfg.cc
+@@ -1231,22 +1231,6 @@ time_t BackgroundCleanup()
+ }
+ 
+ #ifdef HAVE_SSL
+-bool DecodeBase64(LPCSTR pAscii, acbuf& binData) {
+-	if(!pAscii)
+-		return false;
+-	auto len=::strlen(pAscii);
+-	binData.setsize(len);
+-	binData.clear();
+-	FILE* memStrm = ::fmemopen( (void*) pAscii, len, "r");
+-	auto strmBase = BIO_new(BIO_f_base64());
+-	auto strmBin = BIO_new_fp(memStrm, BIO_NOCLOSE);
+-	strmBin = BIO_push(strmBase, strmBin);
+-	BIO_set_flags(strmBin, BIO_FLAGS_BASE64_NO_NL);
+-	binData.got(BIO_read(strmBin, binData.wptr(), len));
+-	BIO_free_all(strmBin);
+-	checkForceFclose(memStrm);
+-	return binData.size();
+-}
+ #endif
+ 
+ lockable authLock;
