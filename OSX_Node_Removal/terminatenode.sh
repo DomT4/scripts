@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 read -p "This will completely erase all traces of Node/npm from your system. You will be asked to enter your password for sudo. Proceed? (y/n)" -n 1 -r
 echo    # blank echo to prevent errors
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     echo "We'll make a backup of your npm installed list so you can reference it later if desired."
-    npm list -g >> npm_global.txt
-    npm list >> npm_non_global.txt
+    npm ls -g --depth=0 >> npm_global.txt
+    npm ls --depth=0 npm_non_global.txt
     echo "Lists have been created! You'll find them in whatever directory you are currently cd'ed into."
 	brew remove node
 	brew cleanup
@@ -33,5 +33,6 @@ then
 	sudo rm /usr/local/share/man/man7/removing-npm.7
 	find -L /usr/local/bin -type l -exec rm -i {} +
 	find -L /usr/local/include -type l -exec rm -i {} +
-	echo "You should now do 'chown YOURUSENAME /usr/local'"
+	find -L /usr/local/lib -type l -exec rm -i {} +
+	echo "You may also need to do 'chown `whoami` /usr/local'"
 fi
