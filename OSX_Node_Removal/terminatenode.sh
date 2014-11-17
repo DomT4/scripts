@@ -5,7 +5,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
     echo "We'll make a backup of your npm installed list so you can reference it later if desired."
     npm ls -g --depth=0 >> npm_global.txt
-    npm ls --depth=0 npm_non_global.txt
+    npm ls --depth=0 >> npm_non_global.txt
     echo "Lists have been created! You'll find them in whatever directory you are currently cd'ed into."
 	brew remove node
 	brew cleanup
