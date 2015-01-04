@@ -1,0 +1,149 @@
+diff --git a/Source/JavaScriptCore/GNUmakefile.am b/Source/JavaScriptCore/GNUmakefile.am
+index fe5448d..5ec98a6 100644
+--- a/Source/JavaScriptCore/GNUmakefile.am
++++ b/Source/JavaScriptCore/GNUmakefile.am
+@@ -26,6 +26,7 @@ libjavascriptcoregtk_@WEBKITGTK_API_MAJOR_VERSION@_@WEBKITGTK_API_MINOR_VERSION@
+ 	$(javascriptcore_sources)
+ 
+ libjavascriptcoregtk_@WEBKITGTK_API_MAJOR_VERSION@_@WEBKITGTK_API_MINOR_VERSION@_la_LIBADD = \
++    -ledit \
+ 	-lpthread \
+ 	libWTF.la \
+ 	$(GLIB_LIBS) \
+diff --git a/Source/WTF/wtf/Assertions.h b/Source/WTF/wtf/Assertions.h
+index 4d968b8..033c0cb 100644
+--- a/Source/WTF/wtf/Assertions.h
++++ b/Source/WTF/wtf/Assertions.h
+@@ -371,7 +371,8 @@ while (0)
+ // a function. Hence it uses macro naming convention.
+ #pragma clang diagnostic push
+ #pragma clang diagnostic ignored "-Wmissing-noreturn"
+-static inline void UNREACHABLE_FOR_PLATFORM()
++__attribute__ ((__always_inline__)) 
++static __inline__ void UNREACHABLE_FOR_PLATFORM()
+ {
+     ASSERT_NOT_REACHED();
+ }
+diff --git a/Source/WebCore/GNUmakefile.list.am b/Source/WebCore/GNUmakefile.list.am
+index bd05ac1..d05c49d 100644
+--- a/Source/WebCore/GNUmakefile.list.am
++++ b/Source/WebCore/GNUmakefile.list.am
+@@ -6251,10 +6251,6 @@ webcoregtk_sources += \
+ 	Source/WebCore/platform/graphics/glx/GLContextGLX.cpp \
+ 	Source/WebCore/platform/graphics/glx/GLContextGLX.h
+ endif # END USE_GLX
+-else
+-webcore_sources += \
+-	Source/WebCore/plugins/PluginPackageNone.cpp \
+-	Source/WebCore/plugins/PluginViewNone.cpp
+ endif # END TARGET_X11
+ 
+ if TARGET_X11_OR_WAYLAND
+diff --git a/Source/WebCore/platform/audio/FFTFrame.h b/Source/WebCore/platform/audio/FFTFrame.h
+index cd04830..7a11909 100644
+--- a/Source/WebCore/platform/audio/FFTFrame.h
++++ b/Source/WebCore/platform/audio/FFTFrame.h
+@@ -47,13 +47,6 @@
+ #include "mkl_dfti.h"
+ #endif // USE(WEBAUDIO_MKL)
+ 
+-#if USE(WEBAUDIO_GSTREAMER)
+-#include <glib.h>
+-G_BEGIN_DECLS
+-#include <gst/fft/gstfftf32.h>
+-G_END_DECLS
+-#endif // USE(WEBAUDIO_GSTREAMER)
+-
+ #if USE(WEBAUDIO_OPENMAX_DL_FFT)
+ #include "dl/sp/api/armSP.h"
+ #include "dl/sp/api/omxSP.h"
+@@ -63,6 +56,13 @@ struct RDFTContext;
+ 
+ #endif // !USE_ACCELERATE_FFT
+ 
++#if USE(WEBAUDIO_GSTREAMER)
++#include <glib.h>
++G_BEGIN_DECLS
++#include <gst/fft/gstfftf32.h>
++G_END_DECLS
++#endif // USE(WEBAUDIO_GSTREAMER)
++
+ #if USE(WEBAUDIO_IPP)
+ #include <ipps.h>
+ #endif // USE(WEBAUDIO_IPP)
+diff --git a/Source/WebCore/platform/text/TextCodecUTF8.h b/Source/WebCore/platform/text/TextCodecUTF8.h
+index 270cf29..5948f7b 100644
+--- a/Source/WebCore/platform/text/TextCodecUTF8.h
++++ b/Source/WebCore/platform/text/TextCodecUTF8.h
+@@ -28,6 +28,8 @@
+ 
+ #include "TextCodec.h"
+ 
++#include "../../../JavaScriptCore/icu/unicode/utf8.h"
++
+ namespace WebCore {
+ 
+ class TextCodecUTF8 : public TextCodec {
+diff --git a/Source/WebCore/plugins/PluginPackageNone.cpp b/Source/WebCore/plugins/PluginPackageNone.cpp
+index f7e2a6b..4fcb0e5 100644
+--- a/Source/WebCore/plugins/PluginPackageNone.cpp
++++ b/Source/WebCore/plugins/PluginPackageNone.cpp
+@@ -28,10 +28,6 @@
+ 
+ namespace WebCore {
+ 
+-void PluginPackage::determineQuirks(const String&)
+-{
+-}
+-
+ bool PluginPackage::fetchInfo()
+ {
+     return false;
+diff --git a/Source/WebCore/plugins/PluginView.cpp b/Source/WebCore/plugins/PluginView.cpp
+index 33c0f3d..26232b8 100644
+--- a/Source/WebCore/plugins/PluginView.cpp
++++ b/Source/WebCore/plugins/PluginView.cpp
+@@ -839,7 +839,7 @@ PluginView::PluginView(Frame* parentFrame, const IntSize& size, PluginPackage* p
+ #if defined(XP_MACOSX)
+     , m_contextRef(0)
+ #endif
+-#if defined(XP_UNIX) && ENABLE(NETSCAPE_PLUGIN_API)
++#if PLATFORM(X11) && ENABLE(NETSCAPE_PLUGIN_API)
+     , m_hasPendingGeometryChange(true)
+     , m_drawable(0)
+     , m_visual(0)
+diff --git a/Source/WebCore/plugins/PluginView.h b/Source/WebCore/plugins/PluginView.h
+index 5fd38d2..2f22741 100644
+--- a/Source/WebCore/plugins/PluginView.h
++++ b/Source/WebCore/plugins/PluginView.h
+@@ -378,7 +378,7 @@ private:
+         void setNPWindowIfNeeded();
+ #endif
+ 
+-#if defined(XP_UNIX) && ENABLE(NETSCAPE_PLUGIN_API)
++#if PLATFORM(X11) && ENABLE(NETSCAPE_PLUGIN_API)
+         bool m_hasPendingGeometryChange;
+         Pixmap m_drawable;
+         Visual* m_visual;
+diff --git a/Source/autotools/CheckSystemAndBasicDependencies.m4 b/Source/autotools/CheckSystemAndBasicDependencies.m4
+index 6ba892d..41c0332 100644
+--- a/Source/autotools/CheckSystemAndBasicDependencies.m4
++++ b/Source/autotools/CheckSystemAndBasicDependencies.m4
+@@ -92,7 +92,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+ #endif
+ ])], [c_compiler="gcc"], [])
+ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+-#if !(defined(__clang__) && __clang_major__ >= 3 && __clang_minor__ >= 3)
++#if !(defined(__clang__) && (__apple_build_version__ >= 4250024 || (!defined(__apple_build_version__) && (__clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 3)))))
+ #error Not a supported Clang compiler
+ #endif
+ ])], [c_compiler="clang"], [])
+@@ -111,7 +111,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+ #endif
+ ])], [cxx_compiler="g++"], [])
+ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+-#if !(defined(__clang__) && __clang_major__ >= 3 && __clang_minor__ >= 3)
++#if !(defined(__clang__) && (__apple_build_version__ >= 4250024 || (!defined(__apple_build_version__) && (__clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 3)))))
+ #error Not a supported Clang++ compiler
+ #endif
+ ])], [cxx_compiler="clang++"], [])
