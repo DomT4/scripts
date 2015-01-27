@@ -1,0 +1,76 @@
+diff -urN Ice-3.5.1.original/cpp/config/Make.rules.Darwin Ice-3.5.1/cpp/config/Make.rules.Darwin
+--- Ice-3.5.1.original/cpp/config/Make.rules.Darwin	2013-10-04 16:48:14.000000000 +0100
++++ Ice-3.5.1/cpp/config/Make.rules.Darwin	2013-10-09 10:09:32.000000000 +0100
+@@ -11,26 +11,19 @@
+ # This file is included by Make.rules when uname is Darwin.
+ #
+ 
+-CXX			= xcrun clang++
++CXX			?= g++
+ 
+ CPPFLAGS 	        += -pthread
+ CXXFLAGS		+= -Wall -Werror
+ 
+ ifeq ($(OPTIMIZE),yes)
+-     #
+-     # By default we build binaries with both architectures when optimization is enabled.
+-     #
+-     ifeq ($(CXXARCHFLAGS),)
+-     	CXXARCHFLAGS	:= -arch i386 -arch x86_64
+-     endif   
+-     CXXFLAGS		:= $(CXXARCHFLAGS) -O2 -DNDEBUG $(CXXFLAGS)
++     CXXFLAGS		:= -O2 -DNDEBUG $(CXXFLAGS)
+ else
+-     CXXFLAGS		:= $(CXXARCHFLAGS) -g $(CXXFLAGS)
++     CXXFLAGS		:= -g $(CXXFLAGS)
+ endif
+ 
+ ifeq ($(CPP11), yes)
+     CPPFLAGS += --std=c++11
+-    CXXFLAGS += --stdlib=libc++
+ endif
+ 
+ #
+diff -urN Ice-3.5.1.original/py/config/Make.rules.Darwin Ice-3.5.1/py/config/Make.rules.Darwin
+--- Ice-3.5.1.original/py/config/Make.rules.Darwin	2013-10-04 16:48:15.000000000 +0100
++++ Ice-3.5.1/py/config/Make.rules.Darwin	2013-10-10 12:09:45.000000000 +0100
+@@ -17,19 +17,3 @@
+ mksoname		= $(if $(2),lib$(1).$(2).so,lib$(1).so)
+ mklibname       = lib$(1).so
+ 
+-#
+-# We require Python to be built as a Framework for the IcePy plug-in.
+-#
+-ifneq ($(PYTHON_HOME),)
+-    ifeq ($(shell test ! -f $(PYTHON_HOME)/Python && echo 0),0)
+-        $(error Unable to find Python framework See config/Make.rules.Darwin)
+-    endif
+-    PYTHON_LIBS		= -F$(patsubst %/Python.framework/Versions/,%,$(dir $(PYTHON_HOME))) -framework Python
+-else
+-    XCODE_PATH  = $(shell xcode-select --print-path)
+-    SDKS_DIR    = $(XCODE_PATH)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+-    PYTHON_HOME	= $(SDKS_DIR)/System/Library/Frameworks/Python.framework/Versions/Current
+-    PYTHON_LIBS	= -framework Python
+-endif
+-
+-PYTHON_INCLUDE_DIR	= $(PYTHON_HOME)/include/$(PYTHON_VERSION)
+diff -urN Ice-3.5.1.original/cpp/src/IceGrid/DescriptorHelper.h Ice-3.5.1/cpp/src/IceGrid/DescriptorHelper.h
+--- Ice-3.5.1.original/cpp/src/IceGrid/DescriptorHelper.h	2013-10-04 16:48:14.000000000 +0100
++++ Ice-3.5.1/cpp/src/IceGrid/DescriptorHelper.h	2013-11-15 00:11:22.000000000 +0000
+@@ -247,7 +247,6 @@
+     ServerInstanceHelper(const ServerInstanceDescriptor&, const Resolver&, bool);
+     ServerInstanceHelper(const ServerDescriptorPtr&, const Resolver&, bool);
+     
+-    void operator=(const ServerInstanceHelper&);
+     bool operator==(const ServerInstanceHelper&) const;
+     bool operator!=(const ServerInstanceHelper&) const;
+ 
+@@ -265,7 +264,7 @@
+ 
+     void init(const ServerDescriptorPtr&, const Resolver&, bool);
+ 
+-    const ServerInstanceDescriptor _def;
++    ServerInstanceDescriptor _def;
+     std::string _id;
+     ServerInstanceDescriptor _instance;
+ 
