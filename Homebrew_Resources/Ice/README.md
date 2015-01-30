@@ -1,4 +1,4 @@
 Ice patches.
 =======
 
-Patches for Ice stable and devel to ensure Homebrew with Mavericks compile.
+Patch for Ice stable to ensure Homebrew with Mavericks compile.
