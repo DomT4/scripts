@@ -20,8 +20,8 @@ then
     else
       sudo rm -rf /usr/local/include/node
       sudo rm -rf /usr/local/lib/node_modules
+      sudo rm -rf /usr/local/share/doc/node
       sudo rm -f /usr/local/lib/dtrace/node.d
-      sudo rm -f /usr/local/share/doc/node
       sudo rm -f /usr/local/share/systemtap/tapset/node.stp
       sudo rm -f /usr/local/bin/node
       sudo rm -f /usr/local/bin/npm
